@@ -42,8 +42,8 @@ a = 0.001;
 % Loop over distances
 for idx = 1:length(distances)
     d_0 = distances(idx);
-    % the coardinates of a part of secondary wire
-    % the other parts eaither cnacel each other force or produce neglegible
+    % the coardinates of two ends of a segment that is close to secondary wire
+    % the other segments eaither cnacel each other force or produce neglegible
     % force on the main circuit
     A_start = [d_0, 0.000001, 0.10]; 
     A_end = [d_0, 0.000001, -0.10];
@@ -51,11 +51,16 @@ for idx = 1:length(distances)
     f_vec = calculateNetForce(d_0, A_start, A_end, O_prime, O, I_A, I_B);
     % force on capacitor
     F_AC = calculateForce_capacitor(A_start, A_end, O_center, R, a,  I_A, I_B);
-    %force on capacitor and the main circuit open wirs just the force on Z
+    %force on the capacitor and the main circuit wires. Just the force on Z
     %direction is considered
     forces(idx) = f_vec(3)+ F_AC(3); 
 end
 
+% The force is proportianal to sin^2(omega t) but the average is half of the
+% maximum force in its time period.  we need to multiply by 0.5 and again
+% multiply by 2 because we have two secondary circuits at one side of 
+% main circuit. We need to calculate the other side of circuit as can be
+% seen in the paper. 
 forces = 2 * forces; % there are two sections right and left 
 
 %%
